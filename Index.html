@@ -34,7 +34,7 @@
             height: 100%;
             background-color: #007bff;
             width: 0;
-            animation: loading 3s linear forwards;
+            animation: loading 10s linear forwards;
         }
         @keyframes loading {
             from {
@@ -53,10 +53,10 @@
     </div>
 
     <script>
-        // Optional: Add a callback after the loading bar completes
+        // Redirect to ponkana.html after 10 seconds
         setTimeout(() => {
-            alert('Loading complete!');
-        }, 3000); // Matches the animation duration (3 seconds)
+            window.location.href = 'ponkana.html';
+        }, 10000); // 10 seconds
     </script>
 </body>
 </html>
