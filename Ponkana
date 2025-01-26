@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional High-Quality Camera</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #000;
+      color: white;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      transform-origin: center;
+    }
+    #capture {
+      width: 80px;
+      height: 80px;
+      background-color: #ff4757;
+      border-radius: 50%;
+      border: 4px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      bottom: 20px;
+      cursor: pointer;
+    }
+    img {
+      max-width: 100%;
+      margin-top: 20px;
+      border: 3px solid white;
+    }
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Professional High-Quality Camera</h1>
+  <video id="video" autoplay playsinline></video>
+  <button id="capture"></button>
+  <img id="photo" alt="Captured Image" style="display:none;">
+
+  <script>
+    const video = document.getElementById('video');
+    const captureButton = document.getElementById('capture');
+    const photo = document.getElementById('photo');
+    let zoomFactor = 1;
+    let maxZoom = 1;
+
+    // Access the camera with high resolution and native zoom support
+    navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          width: { ideal: 8000 },
+          height: { ideal: 6000 },
+          facingMode: "environment",
+        },
+      })
+      .then((stream) => {
+        video.srcObject = stream;
+
+        // Access video track for zoom functionality
+        const videoTrack = stream.getVideoTracks()[0];
+        const capabilities = videoTrack.getCapabilities();
+
+        if ('zoom' in capabilities) {
+          maxZoom = capabilities.zoom.max;
+
+          video.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+              // Pinch-to-zoom
+              const touchDistance = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+              zoomFactor = Math.min(maxZoom, Math.max(1, touchDistance / 100));
+              videoTrack.applyConstraints({ advanced: [{ zoom: zoomFactor }] });
+            }
+          });
+        } else {
+          console.warn('Zoom is not supported on this device.');
+        }
+      })
+      .catch((err) => {
+        console.error("Error accessing the camera: ", err);
+        alert("Unable to access the camera. Please allow camera permissions.");
+      });
+
+    // Capture the photo
+    captureButton.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      // Match canvas resolution to video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw the current frame on the canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Save the image
+      const imageData = canvas.toDataURL('image/jpeg', 1.0);
+      photo.src = imageData;
+      photo.style.display = 'block';
+
+      // Optional: Save image to local storage
+      localStorage.setItem('capturedImage', imageData);
+      alert('Image captured and saved!');
+    });
+  </script>
+</body>
+</html>
