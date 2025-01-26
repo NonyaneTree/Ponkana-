@@ -1,0 +1,124 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponkana Funerals</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        nav {
+            position: relative;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .dropdown-button:hover {
+            background-color: #003f8a;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .content {
+            padding: 20px;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .button-group a {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .button-group a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Ponkana Funerals</h1>
+        <nav>
+            <div class="dropdown">
+                <button class="dropdown-button">Menu</button>
+                <div class="dropdown-content">
+                    <a href="#" id="contact-us">Contact Us</a>
+                    <a href="#" id="about-owners">About the Owners</a>
+                    <a href="policies.html">Our Policies</a>
+                    <a href="pay.html">Pay Now</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content">
+        <h2>About Us</h2>
+        <p>
+            Ponkana Funeral Service is a funeral service provider located in Pretoria, South Africa. 
+            There are two branches, one located at 1658 M20 Rd, Opp Erasmus Bus Depot, Erasmus, Pretoria, 0001 1234, 
+            and another at 260 Mabopane Unit A Road, Mabopane Unit A, Mabopane, Gauteng 5. 
+            They offer funeral services, including planning and coordination of funeral events. 
+            You can contact them at 082 645 6133 for more information or to inquire about their services.
+        </p>
+    </div>
+
+    <script>
+        // Event listeners for dropdown items
+        document.getElementById('contact-us').addEventListener('click', () => {
+            alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
+        });
+
+        document.getElementById('about-owners').addEventListener('click', () => {
+            alert('About the Owners:\nThe funeral parlour was founded by Mr. Ponkana.');
+        });
+    </script>
+</body>
+</html>
