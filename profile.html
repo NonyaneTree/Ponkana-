@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Payments</title>
+    <script>
+        function fetchUsers() {
+            fetch('fetch_users.php')
+                .then(response => response.json())
+                .then(data => {
+                    let table = document.getElementById("usersTable");
+                    table.innerHTML = `<tr>
+                        <th>Name & Surname</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Home Address</th>
+                        <th>Policy Selected</th>
+                        <th>Payment Status</th>
+                        <th>Amount</th>
+                        <th>Payment Date</th>
+                    </tr>`;
+
+                    data.forEach(user => {
+                        let paymentStatus = user.status === "Paid" ? 
+                            `<span style="color: green;">Paid</span>` : 
+                            `<span style="color: red;">Unpaid</span>`;
+
+                        let paymentAmount = user.amount ? `R${user.amount}` : "-";
+                        let paymentDate = user.payment_date ? user.payment_date : "-";
+
+                        let row = `<tr>
+                            <td>${user.first_name} ${user.last_name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.house_number}, ${user.street_name}, ${user.town}, ${user.city}, ${user.postal_code}</td>
+                            <td>${user.policy_selected}</td>
+                            <td>${paymentStatus}</td>
+                            <td>${paymentAmount}</td>
+                            <td>${paymentDate}</td>
+                        </tr>`;
+                        table.innerHTML += row;
+                    });
+                })
+                .catch(error => console.log("Error fetching users:", error));
+        }
+    </script>
+</head>
+<body onload="fetchUsers()">
+    <h2>User & Payment Information</h2>
+    <table border="1" id="usersTable"></table>
+</body>
+</html>
