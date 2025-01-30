@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Robot Icon -->
-    <a href="robot.html" class="robot-icon">
+    <a href="robot.html" class="robot-icon" id="robot-icon">
         <img src="robot.png" alt="Robot Icon">
     </a>
 
@@ -160,6 +160,12 @@
             } else if (command.includes("pay now")) {
                 response = "Redirecting you to the payment page.";
                 setTimeout(() => { window.location.href = 'pay.html'; }, 2000);
+            } else if (command.includes("open menu") || command.includes("open manu")) {
+                document.querySelector('.dropdown-content').style.display = 'block'; // Open dropdown menu
+                response = "Opening the menu now.";
+            } else if (command.includes("open robot")) {
+                document.getElementById('robot-icon').click(); // Programmatically click the robot icon
+                response = "Opening the robot page now.";
             } else {
                 response = "I'm sorry, I didn't understand that. Please try again.";
             }
@@ -194,4 +200,4 @@
     </script>
 
 </body>
-            </html>
+</html>
