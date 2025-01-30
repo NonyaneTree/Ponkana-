@@ -65,22 +65,6 @@
         .content {
             padding: 20px;
         }
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .button-group a {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .button-group a:hover {
-            background-color: #218838;
-        }
         .robot-icon img {
             width: 50px;
             height: 50px;
@@ -138,6 +122,55 @@
 
     <script>
         let voiceEnabled = true;
+        let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.continuous = true; // Keep listening
+        recognition.interimResults = false;
+
+        // Start voice command when page loads
+        startVoiceCommand();
+
+        function startVoiceCommand() {
+            if (!voiceEnabled) return;
+            recognition.start();
+            
+            recognition.onresult = function(event) {
+                let last = event.results.length - 1;
+                let command = event.results[last][0].transcript.toLowerCase();
+                speakResponse(command);
+            };
+        }
+
+        function stopVoiceCommand() {
+            recognition.stop();
+        }
+
+        function speakResponse(command) {
+            let response = "";
+
+            if (command.includes("hi") || command.includes("hello")) {
+                response = "Hello, welcome to Ponkana Funerals! How can I assist you?";
+            } else if (command.includes("contact us")) {
+                response = "You can contact us at Akasia branch on 012 701 1216, or our main office at 082 645 6133.";
+            } else if (command.includes("about the owners")) {
+                response = "The funeral parlour was founded by Mr. Ponkana.";
+            } else if (command.includes("policies")) {
+                response = "I will now take you to our policies page.";
+                setTimeout(() => { window.location.href = 'policies.html'; }, 2000);
+            } else if (command.includes("pay now")) {
+                response = "Redirecting you to the payment page.";
+                setTimeout(() => { window.location.href = 'pay.html'; }, 2000);
+            } else {
+                response = "I'm sorry, I didn't understand that. Please try again.";
+            }
+
+            // Speak the response
+            let speech = new SpeechSynthesisUtterance(response);
+            speech.rate = 1;
+            speech.pitch = 1;
+            speech.volume = 1;
+            window.speechSynthesis.speak(speech);
+        }
 
         // Toggle voice command on/off
         document.getElementById("toggleVoiceCommand").addEventListener("click", function () {
@@ -150,41 +183,7 @@
             }
         });
 
-        // Initialize SpeechRecognition
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = "en-US";
-        recognition.interimResults = true;
-
-        function startVoiceCommand() {
-            recognition.start(); // Start listening for speech
-            recognition.onresult = function(event) {
-                let last = event.results.length - 1;
-                let command = event.results[last][0].transcript.toLowerCase();
-                if (command.includes("hi") || command.includes("hello")) {
-                    alert("Hello, welcome to Ponkana Funerals! How can I assist you?");
-                }
-                if (command.includes("contact us")) {
-                    alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
-                }
-                if (command.includes("about the owners")) {
-                    alert('The funeral parlour was founded by Mr. Ponkana.');
-                }
-                if (command.includes("policies")) {
-                    window.location.href = 'policies.html';  // Redirect to policies page
-                }
-            };
-        }
-
-        function stopVoiceCommand() {
-            recognition.stop(); // Stop the speech recognition
-        }
-
-        // Start the voice command automatically when the page loads
-        if (voiceEnabled) {
-            startVoiceCommand();
-        }
-
-        // Event listeners for dropdown items
+        // Event listeners for dropdown menu
         document.getElementById('contact-us').addEventListener('click', () => {
             alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
         });
@@ -195,4 +194,4 @@
     </script>
 
 </body>
-    </html>
+            </html>
