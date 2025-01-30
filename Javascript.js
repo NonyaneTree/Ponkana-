@@ -35,11 +35,11 @@
             if (command.includes("policies")) {
                 window.location.href = 'policies.html';  // Redirect to policies page
             }
-            if (command.includes("open menu")) {
+            if (command.includes("open menu") || command.includes("open manu")) {
                 document.querySelector('.dropdown-content').style.display = 'block'; // Open dropdown menu
             }
             if (command.includes("open robot")) {
-                window.location.href = 'robot.html'; // Redirect to robot page
+                document.getElementById('robot-icon').click(); // Programmatically click the robot icon
             }
 
             // Restart voice command to keep listening
