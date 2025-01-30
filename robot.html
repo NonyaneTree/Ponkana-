@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponkana Funeral Parlor Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #messages {
+            min-height: 150px;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+            overflow-y: auto;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            width: fit-content;
+            margin: 5px 0;
+            float: right;
+            clear: both;
+        }
+        .ponkana-message {
+            background-color: #f1f1f1;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            width: fit-content;
+            margin: 5px 0;
+            float: left;
+            clear: both;
+        }
+        .option {
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .option:hover {
+            background: #0056b3;
+        }
+        input {
+            width: 90%;
+            padding: 8px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        #voiceBtn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #voiceBtn:hover {
+            background-color: #218838;
+        }
+        #switchBtn {
+            background-color: #ffc107;
+            color: black;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #switchBtn:hover {
+            background-color: #e0a800;
+        }
+        #welcomeMessage {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chatbox">
+        <div id="welcomeMessage">Welcome to Ponkana Funeral. If you are not disabled, you can turn off the voice command.</div>
+        <div id="header">Ponkana's Personal Assistant</div>
+        <div id="messages"></div>
+        <input type="text" id="userInput" placeholder="Type a message..." onkeypress="checkInput(event)">
+        <button id="voiceBtn" onclick="startVoiceRecognition()">🎤 Speak</button>
+        <button id="switchBtn" onclick="toggleVoiceCommand()">Turn Off Voice Command</button>
+    </div>
+
+    <script>
+        let userName = ""; 
+        let awaitingName = false; 
+        let voiceEnabled = true; // Keep track of voice command status
+
+        // Check input on keypress
+        function checkInput(event) {
+            if (event.key === "Enter") {
+                let input = document.getElementById("userInput").value.trim();
+                let messages = document.getElementById("messages");
+
+                if (awaitingName) {
+                    userName = input;
+                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> ${userName}</div>`;
+                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Hi ${userName}, Welcome to Ponkana Funeral Parlor. How can we assist today?</div>`;
+                    messages.innerHTML += `
+                        <a href="#" class="option">Our Policies</a>
+                        <a href="#" class="option">Our Contact</a>
+                        <a href="#" class="option">Our Locations</a>
+                    `;
+                    awaitingName = false; 
+                } else if (input.toLowerCase() === "hi") {
+                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> Hi</div>`;
+                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Please enter your name.</div>`;
+                    awaitingName = true;
+                }
+
+                document.getElementById("userInput").value = ""; // Clear input field
+                messages.scrollTop = messages.scrollHeight; // Auto-scroll to latest message
+            }
+        }
+
+        // Initialize Speech Recognition API
+        function startVoiceRecognition() {
+            if (voiceEnabled) {
+                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+                recognition.lang = 'en-US';
+                recognition.start();
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById("userInput").value = transcript;
+                    checkInput({ key: 'Enter' }); // Simulate pressing Enter to process the voice input
+                };
+
+                recognition.onerror = function(event) {
+                    console.error("Speech Recognition Error", event);
+                };
+            }
+        }
+
+        // Toggle voice command on/off
+        function toggleVoiceCommand() {
+            voiceEnabled = !voiceEnabled; // Toggle the status
+            if (voiceEnabled) {
+                document.getElementById("switchBtn").textContent = "Turn Off Voice Command";
+                document.getElementById("welcomeMessage").textContent = "Voice commands are now enabled. You can turn them off anytime.";
+            } else {
+                document.getElementById("switchBtn").textContent = "Turn On Voice Command";
+                document.getElementById("welcomeMessage").textContent = "Voice commands are now disabled. Type your message instead.";
+            }
+        }
+    </script>
+
+</body>
+</html>
