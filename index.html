@@ -16,6 +16,8 @@
             height: 100vh;
             flex-direction: column;
             text-align: center;
+            overflow: hidden;
+            position: relative;
         }
         h1 {
             font-size: 36px;
@@ -45,10 +47,16 @@
                 width: 100%;
             }
         }
-        .languages {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #555;
+        .floating-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            animation: float 10s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
         }
     </style>
 </head>
@@ -59,21 +67,8 @@
         <div class="loading-bar"></div>
     </div>
 
-    <div class="languages">
-        <p>Siyaphila nawe (Zulu)</p>
-        <p>Re na le wena (Sesotho)</p>
-        <p>Sithatha uhambo nawe (Xhosa)</p>
-        <p>Ri na wena (Venda)</p>
-        <p>Si na wena (Tsonga)</p>
-        <p>Re na le wena (Tswana)</p>
-        <p>Hina ri na wena (Xitsonga)</p>
-        <p>We are with you (English)</p>
-        <p>Sipho ubudlelwane (Ndebele)</p>
-        <p>Ons is saam met jou (Afrikaans)</p>
-    </div>
-
     <audio autoplay>
-        <source src="your-audio-file.mp3" type="audio/mpeg">
+        <source src="ponkana-audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
@@ -82,7 +77,30 @@
         setTimeout(() => {
             window.location.href = 'ponkana.html';
         }, 10000); // 10 seconds
+
+        // Words to animate
+        const words = ["We are with you", "We stand together", "Always by your side", "You are not alone", "Together in spirit"];
+
+        function createFloatingText() {
+            const text = document.createElement("div");
+            text.classList.add("floating-text");
+            text.innerText = words[Math.floor(Math.random() * words.length)];
+
+            // Randomize position
+            text.style.left = Math.random() * 90 + "vw";
+            text.style.top = Math.random() * 90 + "vh";
+
+            document.body.appendChild(text);
+
+            // Remove after animation
+            setTimeout(() => text.remove(), 10000);
+        }
+
+        // Generate multiple floating words
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createFloatingText, Math.random() * 5000);
+        }
     </script>
 
 </body>
-    </html>
+</html>
