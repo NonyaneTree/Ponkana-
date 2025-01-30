@@ -107,7 +107,7 @@
 <body>
 
     <div id="chatbox">
-        <div id="welcomeMessage">Welcome to Ponkana Funeral. If you are not disabled, you can turn off the voice command.</div>
+        <div id="welcomeMessage">Welcome to Ponkana Funeral. Voice command is enabled. You can turn it off anytime.</div>
         <div id="header">Ponkana's Personal Assistant</div>
         <div id="messages"></div>
         <input type="text" id="userInput" placeholder="Type a message..." onkeypress="checkInput(event)">
@@ -118,7 +118,7 @@
     <script>
         let userName = ""; 
         let awaitingName = false; 
-        let voiceEnabled = true; // Keep track of voice command status
+        let voiceEnabled = true; // Voice command is enabled by default
 
         // Check input on keypress
         function checkInput(event) {
@@ -178,6 +178,13 @@
                 document.getElementById("welcomeMessage").textContent = "Voice commands are now disabled. Type your message instead.";
             }
         }
+
+        // Display a welcome message when the user logs in (or enters the site)
+        window.onload = function() {
+            if (!userName) {
+                document.getElementById("messages").innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Welcome to Ponkana Funeral. If you are not disabled, you can turn off the voice command.</div>`;
+            }
+        };
     </script>
 
 </body>
