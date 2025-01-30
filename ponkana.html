@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponkana Funeral Service</title>
+    <title>Ponkana Funerals</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,75 +11,110 @@
             background-color: #f4f4f4;
             text-align: center;
         }
-        .content {
-            margin-top: 20px;
-        }
-        #header {
-            background: #007bff;
+        header {
+            background-color: #007bff;
             color: white;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        nav {
+            position: relative;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .dropdown-button:hover {
+            background-color: #003f8a;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .content {
+            padding: 20px;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .button-group a {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .button-group a:hover {
+            background-color: #218838;
         }
         .robot-icon img {
             width: 50px;
             height: 50px;
+            border-radius: 50%;
             cursor: pointer;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
         }
-        .option {
-            display: block;
-            margin: 10px;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 200px;
-            margin: 5px auto;
-        }
-        .option:hover {
-            background: #0056b3;
-        }
-        #voiceBtn {
+        #toggleVoiceCommand {
+            margin-top: 20px;
+            padding: 10px 15px;
             background-color: #28a745;
             color: white;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        #voiceBtn:hover {
+        #toggleVoiceCommand:hover {
             background-color: #218838;
-        }
-        #switchBtn {
-            background-color: #ffc107;
-            color: black;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #switchBtn:hover {
-            background-color: #e0a800;
-        }
-        #welcomeMessage {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #007bff;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div id="header">
-            <h1>Ponkana Funeral Service</h1>
-        </div>
+        <h1>Ponkana Funerals</h1>
+        <nav>
+            <div class="dropdown">
+                <button class="dropdown-button">Menu</button>
+                <div class="dropdown-content">
+                    <a href="#" id="contact-us">Contact Us</a>
+                    <a href="#" id="about-owners">About the Owners</a>
+                    <a href="policies.html">Our Policies</a>
+                    <a href="pay.html">Pay Now</a>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <div class="content">
@@ -98,65 +133,66 @@
         <img src="robot.png" alt="Robot Icon">
     </a>
 
-    <!-- Voice Command and Switch -->
-    <div id="voiceCommand">
-        <button id="voiceBtn" onclick="startVoiceRecognition()">🎤 Speak</button>
-        <button id="switchBtn" onclick="toggleVoiceCommand()">Turn Off Voice Command</button>
-    </div>
+    <!-- Button to toggle voice command -->
+    <button id="toggleVoiceCommand">Turn Off Voice Command</button>
 
     <script>
-        let voiceEnabled = true; // Voice command is enabled by default
-
-        // Initialize Speech Recognition API
-        function startVoiceRecognition() {
-            if (voiceEnabled) {
-                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
-                recognition.lang = 'en-US';
-                recognition.start();
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    alert("You said: " + transcript); // Speak back the user's input
-                    processVoiceInput(transcript);  // Process the voice input (you can add custom processing here)
-                };
-
-                recognition.onerror = function(event) {
-                    console.error("Speech Recognition Error", event);
-                };
-            }
-        }
+        let voiceEnabled = true;
 
         // Toggle voice command on/off
-        function toggleVoiceCommand() {
-            voiceEnabled = !voiceEnabled; // Toggle the status
+        document.getElementById("toggleVoiceCommand").addEventListener("click", function () {
+            voiceEnabled = !voiceEnabled;
+            this.textContent = voiceEnabled ? "Turn Off Voice Command" : "Turn On Voice Command";
             if (voiceEnabled) {
-                document.getElementById("switchBtn").textContent = "Turn Off Voice Command";
-                startVoiceRecognition(); // Start voice recognition again if turned back on
+                startVoiceCommand();
             } else {
-                document.getElementById("switchBtn").textContent = "Turn On Voice Command";
-                alert("Voice command is now disabled. Please type your messages.");
+                stopVoiceCommand();
             }
+        });
+
+        // Initialize SpeechRecognition
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.interimResults = true;
+
+        function startVoiceCommand() {
+            recognition.start(); // Start listening for speech
+            recognition.onresult = function(event) {
+                let last = event.results.length - 1;
+                let command = event.results[last][0].transcript.toLowerCase();
+                if (command.includes("hi") || command.includes("hello")) {
+                    alert("Hello, welcome to Ponkana Funerals! How can I assist you?");
+                }
+                if (command.includes("contact us")) {
+                    alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
+                }
+                if (command.includes("about the owners")) {
+                    alert('The funeral parlour was founded by Mr. Ponkana.');
+                }
+                if (command.includes("policies")) {
+                    window.location.href = 'policies.html';  // Redirect to policies page
+                }
+            };
         }
 
-        // Function to process the voice input (you can customize this as needed)
-        function processVoiceInput(input) {
-            // For example, let's handle a few specific commands
-            if (input.toLowerCase().includes("contact us")) {
-                alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
-            } else if (input.toLowerCase().includes("about the owners")) {
-                alert('About the Owners:\nThe funeral parlour was founded by Mr. Ponkana.');
-            } else {
-                alert("Sorry, I didn't understand that command.");
-            }
+        function stopVoiceCommand() {
+            recognition.stop(); // Stop the speech recognition
         }
-        
-        // Optional: Automatically greet the user when they land on the page
-        window.onload = function() {
-            if (voiceEnabled) {
-                alert("Welcome to Ponkana Funeral Service. Voice commands are enabled. You can turn them off anytime.");
-            }
+
+        // Start the voice command automatically when the page loads
+        if (voiceEnabled) {
+            startVoiceCommand();
         }
+
+        // Event listeners for dropdown items
+        document.getElementById('contact-us').addEventListener('click', () => {
+            alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
+        });
+
+        document.getElementById('about-owners').addEventListener('click', () => {
+            alert('About the Owners:\nThe funeral parlour was founded by Mr. Ponkana.');
+        });
     </script>
+
 </body>
-</html>
+    </html>
