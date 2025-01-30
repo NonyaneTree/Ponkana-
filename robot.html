@@ -62,6 +62,7 @@
             text-decoration: none;
             border-radius: 3px;
             text-align: center;
+            cursor: pointer;
         }
         .option:hover {
             background: #0056b3;
@@ -113,6 +114,11 @@
         <input type="text" id="userInput" placeholder="Type a message..." onkeypress="checkInput(event)">
         <button id="voiceBtn" onclick="startVoiceRecognition()">🎤 Speak</button>
         <button id="switchBtn" onclick="toggleVoiceCommand()">Turn Off Voice Command</button>
+
+        <!-- Predefined Options -->
+        <div class="option" onclick="triggerMessage('Hi')">Hi</div>
+        <div class="option" onclick="triggerMessage('What is your name?')">What is your name?</div>
+        <div class="option" onclick="triggerMessage('Help')">Help</div>
     </div>
 
     <script>
@@ -159,6 +165,12 @@
             }
         }
 
+        // Trigger predefined message when clicking an option
+        function triggerMessage(message) {
+            document.getElementById("userInput").value = message;
+            checkInput({ key: 'Enter' }); // Simulate pressing Enter
+        }
+
         // Check input on keypress
         function checkInput(event) {
             if (event.key === "Enter") {
@@ -176,6 +188,10 @@
                     messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Please enter your name.</div>`;
                     awaitingName = true;
                     speak("Please enter your name.");
+                } else if (input.toLowerCase() === "help") {
+                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> Help</div>`;
+                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> How can we assist you further? You can ask about our policies, locations, and more.</div>`;
+                    speak("How can we assist you further? You can ask about our policies, locations, and more.");
                 }
 
                 document.getElementById("userInput").value = ""; // Clear input field
@@ -198,4 +214,4 @@
     </script>
 
 </body>
-    </html>
+</html>
