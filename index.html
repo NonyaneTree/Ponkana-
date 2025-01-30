@@ -40,23 +40,21 @@
             animation: loading 10s linear forwards;
         }
         @keyframes loading {
-            from {
-                width: 0;
-            }
-            to {
-                width: 100%;
-            }
+            from { width: 0; }
+            to { width: 100%; }
         }
         .floating-text {
             position: absolute;
             font-size: 24px;
             font-weight: bold;
             color: #007bff;
-            animation: float 10s linear infinite;
+            opacity: 0;
+            animation: fadeInOut 2s linear;
         }
-        @keyframes float {
-            0% { transform: translateY(0px); opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
         }
     </style>
 </head>
@@ -76,30 +74,33 @@
         // Redirect to ponkana.html after 10 seconds
         setTimeout(() => {
             window.location.href = 'ponkana.html';
-        }, 10000); // 10 seconds
+        }, 10000);
 
-        // Words to animate
         const words = ["We are with you", "We stand together", "Always by your side", "You are not alone", "Together in spirit"];
+        let index = 0;
 
-        function createFloatingText() {
+        function displayWord() {
+            if (index >= words.length) return;
+
             const text = document.createElement("div");
             text.classList.add("floating-text");
-            text.innerText = words[Math.floor(Math.random() * words.length)];
+            text.innerText = words[index];
 
             // Randomize position
-            text.style.left = Math.random() * 90 + "vw";
-            text.style.top = Math.random() * 90 + "vh";
+            text.style.left = Math.random() * 80 + "vw";
+            text.style.top = Math.random() * 80 + "vh";
 
             document.body.appendChild(text);
 
-            // Remove after animation
-            setTimeout(() => text.remove(), 10000);
+            // Remove text after animation
+            setTimeout(() => text.remove(), 2000);
+
+            index++;
+            setTimeout(displayWord, 2000); // Show next word after 2 seconds
         }
 
-        // Generate multiple floating words
-        for (let i = 0; i < 10; i++) {
-            setTimeout(createFloatingText, Math.random() * 5000);
-        }
+        displayWord(); // Start sequence
+
     </script>
 
 </body>
