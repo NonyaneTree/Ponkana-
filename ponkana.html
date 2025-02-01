@@ -71,22 +71,18 @@
         .content {
             padding: 20px;
         }
-        .robot-icon img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
+        .image-slider {
+            position: relative;
+            max-width: 600px;
+            margin: 20px auto;
+            overflow: hidden;
         }
-        #toggleVoiceCommand {
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
+        .image-slider img {
+            width: 100%;
+            display: none;
         }
-        #toggleVoiceCommand:hover {
-            background-color: #218838;
+        .image-slider img.active {
+            display: block;
         }
         /* Ensure responsiveness */
         @media (max-width: 768px) {
@@ -116,8 +112,8 @@
                     <a href="#" id="about-owners">About the Owners</a>
                     <a href="policies.html">Our Policies</a>
                     <a href="pay.html">Pay Now</a>
-                    <a href="profile.html">Profile</a> <!-- Profile link added -->
-                    <a href="freecall.html">Free Call</a> <!-- Added Free Call Link -->
+                    <a href="profile.html">Profile</a>
+                    <a href="freecall.html">Free Call</a>
                 </div>
             </div>
         </nav>
@@ -127,11 +123,16 @@
         <h2>About Us</h2>
         <p>
             Ponkana Funeral Service is a funeral service provider located in Pretoria, South Africa. 
-            There are two branches, one located at 1658 M20 Rd, Opp Erasmus Bus Depot, Erasmus, Pretoria, 0001 1234, 
-            and another at 260 Mabopane Unit A Road, Mabopane Unit A, Mabopane, Gauteng 5. 
             They offer funeral services, including planning and coordination of funeral events. 
             You can contact them at 082 645 6133 for more information or to inquire about their services.
         </p>
+        
+        <div class="image-slider">
+            <img src="image1.png" class="active" alt="Image 1">
+            <img src="image2.png" alt="Image 2">
+            <img src="image3.png" alt="Image 3">
+            <img src="image4.png" alt="Image 4">
+        </div>
     </div>
 
     <!-- Robot Icon -->
@@ -219,6 +220,16 @@
         document.getElementById('about-owners').addEventListener('click', () => {
             alert('About the Owners:\nThe funeral parlour was founded by Mr. Ponkana.');
         });
+
+        // Image slider functionality
+        let currentIndex = 0;
+        const images = document.querySelectorAll('.image-slider img');
+        setInterval(() => {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }, 3000); // Change image every 3 seconds
+
     </script>
 
 </body>
