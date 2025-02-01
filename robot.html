@@ -3,213 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponkana Funeral Parlor Chat</title>
+    <title>AI Chat - Tobi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f4f4f4;
             text-align: center;
         }
-        #chatbox {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
+        .chat-container {
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
             background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        #header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        #messages {
-            min-height: 150px;
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
             border-bottom: 1px solid #ddd;
             padding: 10px;
-            margin-bottom: 10px;
             text-align: left;
-            overflow-y: auto;
         }
         .user-message {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            width: fit-content;
-            margin: 5px 0;
-            float: right;
-            clear: both;
-        }
-        .ponkana-message {
-            background-color: #f1f1f1;
-            color: black;
-            padding: 10px;
-            border-radius: 10px;
-            width: fit-content;
-            margin: 5px 0;
-            float: left;
-            clear: both;
-        }
-        .option {
-            display: block;
-            margin: 5px 0;
-            padding: 10px;
             background: #007bff;
             color: white;
-            text-decoration: none;
-            border-radius: 3px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .option:hover {
-            background: #0056b3;
-        }
-        input {
-            width: 90%;
             padding: 8px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 5px;
+            margin: 5px 0;
+            display: inline-block;
         }
-        #voiceBtn {
-            background-color: #28a745;
+        .bot-message {
+            background: #eee;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
+            display: inline-block;
+        }
+        .options {
+            display: none;
+            margin-top: 10px;
+        }
+        .options button {
+            background-color: #007bff;
             color: white;
-            padding: 10px;
-            margin-top: 10px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #voiceBtn:hover {
-            background-color: #218838;
-        }
-        #switchBtn {
-            background-color: #ffc107;
-            color: black;
             padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
+            margin: 5px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        #switchBtn:hover {
-            background-color: #e0a800;
+        .options button:hover {
+            background-color: #0056b3;
         }
-        #welcomeMessage {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #007bff;
+        .input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-container button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div id="chatbox">
-        <div id="welcomeMessage">Welcome to Ponkana Funeral. Voice command is enabled. You can turn it off anytime.</div>
-        <div id="header">Ponkana's Personal Assistant</div>
-        <div id="messages"></div>
-        <input type="text" id="userInput" placeholder="Type a message..." onkeypress="checkInput(event)">
-        <button id="voiceBtn" onclick="startVoiceRecognition()">🎤 Speak</button>
-        <button id="switchBtn" onclick="toggleVoiceCommand()">Turn Off Voice Command</button>
-
-        <!-- Predefined Options -->
-        <div class="option" onclick="triggerMessage('Hi')">Hi</div>
-        <div class="option" onclick="triggerMessage('What is your name?')">What is your name?</div>
-        <div class="option" onclick="triggerMessage('Help')">Help</div>
+    <div class="chat-container">
+        <h2>AI Chat - Tobi</h2>
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="options" id="options">
+            <button onclick="fetchPolicies()">Policies</button>
+            <button onclick="fetchOwners()">About the Owners</button>
+            <button onclick="fetchContact()">Contact Information</button>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
 
     <script>
-        let userName = ""; 
-        let awaitingName = false; 
-        let voiceEnabled = true; // Voice command is enabled by default
+        function sendMessage() {
+            let userInput = document.getElementById("user-input").value.trim().toLowerCase();
+            let chatBox = document.getElementById("chat-box");
+            document.getElementById("user-input").value = ""; // Clear input field
 
-        // Initialize Speech Recognition API
-        function startVoiceRecognition() {
-            if (voiceEnabled) {
-                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            if (userInput === "") return;
 
-                recognition.lang = 'en-US';
-                recognition.start();
+            // Display user message
+            chatBox.innerHTML += `<div class="user-message">${userInput}</div>`;
 
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById("userInput").value = transcript;
-                    checkInput({ key: 'Enter' }); // Simulate pressing Enter to process the voice input
-                    speak(`You said: ${transcript}`); // Assistant speaks back the user input
-                    if (awaitingName) {
-                        userName = transcript;  // Capture name if the assistant is awaiting it
-                        speak(`Your name is now set as ${userName}`);
-                    }
-                };
-
-                recognition.onerror = function(event) {
-                    console.error("Speech Recognition Error", event);
-                };
-            }
-        }
-
-        // Toggle voice command on/off
-        function toggleVoiceCommand() {
-            voiceEnabled = !voiceEnabled; // Toggle the status
-            if (voiceEnabled) {
-                document.getElementById("switchBtn").textContent = "Turn Off Voice Command";
-                document.getElementById("welcomeMessage").textContent = "Voice commands are now enabled. You can turn them off anytime.";
-                startVoiceRecognition(); // Start voice recognition again if turned back on
+            if (userInput === "hi" || userInput === "hello") {
+                // Respond with greeting
+                setTimeout(() => {
+                    chatBox.innerHTML += `<div class="bot-message">Hello, I am Tobi, Ponkana Funerals assistant. How can I help you today?</div>`;
+                    document.getElementById("options").style.display = "block"; // Show options
+                }, 500);
             } else {
-                document.getElementById("switchBtn").textContent = "Turn On Voice Command";
-                document.getElementById("welcomeMessage").textContent = "Voice commands are now disabled. Type your message instead.";
-                speechSynthesis.cancel(); // Stop any ongoing speech
+                chatBox.innerHTML += `<div class="bot-message">I'm sorry, I didn't understand that. Please type "hi" or "hello" to start.</div>`;
             }
+
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
         }
 
-        // Trigger predefined message when clicking an option
-        function triggerMessage(message) {
-            document.getElementById("userInput").value = message;
-            checkInput({ key: 'Enter' }); // Simulate pressing Enter
+        function fetchPolicies() {
+            fetch("policies.html")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("chat-box").innerHTML += `<div class="bot-message">${data}</div>`;
+                });
         }
 
-        // Check input on keypress
-        function checkInput(event) {
-            if (event.key === "Enter") {
-                let input = document.getElementById("userInput").value.trim();
-                let messages = document.getElementById("messages");
-
-                if (awaitingName) {
-                    userName = input;
-                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> ${userName}</div>`;
-                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Hi ${userName}, Welcome to Ponkana Funeral Parlor. How can we assist today?</div>`;
-                    awaitingName = false; 
-                    speak(`Hi ${userName}, Welcome to Ponkana Funeral Parlor. How can we assist today?`);
-                } else if (input.toLowerCase() === "hi") {
-                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> Hi</div>`;
-                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> Please enter your name.</div>`;
-                    awaitingName = true;
-                    speak("Please enter your name.");
-                } else if (input.toLowerCase() === "help") {
-                    messages.innerHTML += `<div class="user-message"><strong>User:</strong> Help</div>`;
-                    messages.innerHTML += `<div class="ponkana-message"><strong>Ponkana Funeral Parlor:</strong> How can we assist you further? You can ask about our policies, locations, and more.</div>`;
-                    speak("How can we assist you further? You can ask about our policies, locations, and more.");
-                }
-
-                document.getElementById("userInput").value = ""; // Clear input field
-                messages.scrollTop = messages.scrollHeight; // Auto-scroll to latest message
-            }
+        function fetchOwners() {
+            fetch("ponkana.html")
+                .then(response => response.text())
+                .then(data => {
+                    let ownerInfo = data.match(/About the Owners:(.*?)<\/p>/i);
+                    let message = ownerInfo ? ownerInfo[1] : "Owner information not found.";
+                    document.getElementById("chat-box").innerHTML += `<div class="bot-message">${message}</div>`;
+                });
         }
 
-        // Speak text using the SpeechSynthesis API
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            speechSynthesis.speak(utterance);
-        }
-
-        // Display a welcome message when the user logs in (or enters the site)
-        window.onload = function() {
-            speak("Welcome to Ponkana Funeral. Voice command is enabled.");
-            startVoiceRecognition(); // Always start listening for voice commands when the page loads
+        function fetchContact() {
+            fetch("ponkana.html")
+                .then(response => response.text())
+                .then(data => {
+                    let contactInfo = data.match(/Contact Us:(.*?)<\/p>/i);
+                    let message = contactInfo ? contactInfo[1] : "Contact information not found.";
+                    document.getElementById("chat-box").innerHTML += `<div class="bot-message">${message}</div>`;
+                });
         }
     </script>
 
