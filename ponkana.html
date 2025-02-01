@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,6 +84,18 @@
         .image-slider img.active {
             display: block;
         }
+        .owner-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .owner-info img {
+            width: 100px;
+            height: auto;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
         /* Ensure responsiveness */
         @media (max-width: 768px) {
             header {
@@ -132,6 +144,14 @@
             <img src="image2.png" alt="Image 2">
             <img src="image3.png" alt="Image 3">
             <img src="image4.png" alt="Image 4">
+        </div>
+
+        <div class="owner-info">
+            <img src="owner.png" alt="Owner">
+            <div>
+                <h3>Lucas Ponkana</h3>
+                <p>Founder of Ponkana Funerals</p>
+            </div>
         </div>
     </div>
 
@@ -234,4 +254,3 @@
 
 </body>
 </html>
-  
