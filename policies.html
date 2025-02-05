@@ -3,39 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extract Data from PDF</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #output { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; min-height: 100px; background: #f9f9f9; padding: 10px; }
-    </style>
+    <title>PDF Viewer</title>
 </head>
 <body>
-    <h2>Extracted Data from PDF</h2>
-    <div id="output">Loading...</div>
-
-    <script>
-        async function extractPDF() {
-            const pdfUrl = "document1.pdf"; // Updated filename
-            try {
-                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-                let extractedText = "";
-
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(" ");
-                    extractedText += `Page ${pageNum}:\n${pageText}\n\n`;
-                }
-
-                document.getElementById("output").textContent = extractedText;
-            } catch (error) {
-                console.error("Error loading PDF:", error);
-                document.getElementById("output").textContent = "Error loading PDF.";
-            }
-        }
-
-        extractPDF(); // Automatically runs on page load
-    </script>
+    <h2>PDF Viewer</h2>
+    <iframe src="document1.pdf" width="100%" height="600px"></iframe>
 </body>
 </html>
