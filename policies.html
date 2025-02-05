@@ -4,24 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extract Data from PDF</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
-        #output { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; min-height: 100px; }
+        #output { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; min-height: 100px; background: #f9f9f9; padding: 10px; }
     </style>
 </head>
 <body>
     <h2>Extracted Data from PDF</h2>
-    <button onclick="extractPDF()">Extract PDF Data</button>
-    <div id="output"></div>
+    <div id="output">Loading...</div>
 
     <script>
         async function extractPDF() {
-            const pdfUrl = "document1.pdf"; // PDF file should be in the same folder as this HTML
-            const loadingTask = pdfjsLib.getDocument(pdfUrl);
-
+            const pdfUrl = "document.pdf"; // PDF must be in the same folder as this HTML
             try {
-                const pdf = await loadingTask.promise;
+                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
                 let extractedText = "";
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
@@ -37,6 +34,8 @@
                 document.getElementById("output").textContent = "Error loading PDF.";
             }
         }
+
+        extractPDF(); // Auto-run function on page load
     </script>
 </body>
 </html>
