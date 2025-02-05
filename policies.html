@@ -16,7 +16,7 @@
 
     <script>
         async function extractPDF() {
-            const pdfUrl = "document.pdf"; // PDF must be in the same folder as this HTML
+            const pdfUrl = "document1.pdf"; // Updated filename
             try {
                 const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
                 let extractedText = "";
@@ -35,7 +35,7 @@
             }
         }
 
-        extractPDF(); // Auto-run function on page load
+        extractPDF(); // Automatically runs on page load
     </script>
 </body>
 </html>
