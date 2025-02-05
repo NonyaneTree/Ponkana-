@@ -123,11 +123,7 @@
         }
 
         function fetchPolicies() {
-            fetch("policies.html")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("chat-box").innerHTML += `<div class="bot-message">${data}</div>`;
-                });
+            window.open("sample.pdf", "_blank"); // Opens the PDF in a new tab
         }
 
         function fetchOwners() {
