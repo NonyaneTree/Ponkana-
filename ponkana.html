@@ -3,223 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponkana Funerals</title>
-    <style>
-        /* Basic styling */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        header h1 {
-            margin: 0;
-            flex-grow: 1;
-            font-size: 24px;
-        }
-        nav {
-            position: relative;
-        }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .dropdown-button {
-            background-color: #0056b3;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .dropdown-button:hover {
-            background-color: #003f8a;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: Black;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-        .dropdown-content a {
-            color: gold;
-            padding: 10px 15px;
-            text-decoration: none;
-            display: block;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .content {
-            padding: 20px;
-        }
-        .robot-icon img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        #toggleVoiceCommand {
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #toggleVoiceCommand:hover {
-            background-color: #218838;
-        }
-        /* Ensure responsiveness */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-            .dropdown-button {
-                width: 100%;
-                margin-top: 10px;
-            }
-            .dropdown-content {
-                width: 100%;
-            }
-        }
-    </style>
+    <title>PDF Opener</title>
 </head>
 <body>
+    <h2>Open or Download PDF</h2>
+    
+    <!-- PDF View in Browser -->
+    <iframe src="sample.pdf" width="100%" height="600px"></iframe>
 
-    <header>
-        <h1>Ponkana Funerals</h1>
-        <nav>
-            <div class="dropdown">
-                <button class="dropdown-button">Menu</button>
-                <div class="dropdown-content">
-                    <a href="#" id="contact-us">Contact Us</a>
-                    <a href="#" id="about-owners">About the Owners</a>
-                    <a href="policies.html">Our Policies</a>
-                    <a href="pay.html">Pay Now</a>
-                    <a href="profile.html">Profile</a> <!-- Profile link added -->
-                    <a href="freecall.html">Free Call</a> <!-- Added Free Call Link -->
-                </div>
-            </div>
-        </nav>
-    </header>
+    <br><br>
 
-    <div class="content">
-        <h2>About Us</h2>
-        <p>
-            Ponkana Funeral Service is a funeral service provider located in Pretoria, South Africa. 
-            There are two branches, one located at 1658 M20 Rd, Opp Erasmus Bus Depot, Erasmus, Pretoria, 0001 1234, 
-            and another at 260 Mabopane Unit A Road, Mabopane Unit A, Mabopane, Gauteng 5. 
-            They offer funeral services, including planning and coordination of funeral events. 
-            You can contact them at 082 645 6133 for more information or to inquire about their services.
-        </p>
-    </div>
-
-    <!-- Robot Icon -->
-    <a href="robot.html" class="robot-icon" id="robot-icon">
-        <img src="robot.png" alt="Robot Icon">
+    <!-- Download Button -->
+    <a href="sample.pdf" download>
+        <button>Download PDF</button>
     </a>
 
-    <!-- Button to toggle voice command -->
-    <button id="toggleVoiceCommand">Turn Off Voice Command</button>
-
-    <script>
-        let voiceEnabled = true;
-        let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = "en-US";
-        recognition.continuous = true; // Keep listening
-        recognition.interimResults = false;
-
-        // Start voice command when page loads
-        startVoiceCommand();
-
-        function startVoiceCommand() {
-            if (!voiceEnabled) return;
-            recognition.start();
-            
-            recognition.onresult = function(event) {
-                let last = event.results.length - 1;
-                let command = event.results[last][0].transcript.toLowerCase();
-                speakResponse(command);
-            };
-        }
-
-        function stopVoiceCommand() {
-            recognition.stop();
-        }
-
-        function speakResponse(command) {
-            let response = "";
-
-            if (command.includes("hi") || command.includes("hello")) {
-                response = "Hello, welcome to Ponkana Funerals! How can I assist you?";
-            } else if (command.includes("contact us")) {
-                response = "You can contact us at Akasia branch on 012 701 1216, or our main office at 082 645 6133.";
-            } else if (command.includes("about the owners")) {
-                response = "The funeral parlour was founded by Mr. Ponkana.";
-            } else if (command.includes("policies")) {
-                response = "I will now take you to our policies page.";
-                setTimeout(() => { window.location.href = 'policies.html'; }, 2000);
-            } else if (command.includes("pay now")) {
-                response = "Redirecting you to the payment page.";
-                setTimeout(() => { window.location.href = 'pay.html'; }, 2000);
-            } else if (command.includes("open menu") || command.includes("open manu")) {
-                document.querySelector('.dropdown-content').style.display = 'block'; // Open dropdown menu
-                response = "Opening the menu now.";
-            } else if (command.includes("open robot")) {
-                document.getElementById('robot-icon').click(); // Programmatically click the robot icon
-                response = "Opening the robot page now.";
-            } else {
-                response = "I'm sorry, I didn't understand that. Please try again.";
-            }
-
-            // Speak the response
-            let speech = new SpeechSynthesisUtterance(response);
-            speech.rate = 1;
-            speech.pitch = 1;
-            speech.volume = 1;
-            window.speechSynthesis.speak(speech);
-        }
-
-        // Toggle voice command on/off
-        document.getElementById("toggleVoiceCommand").addEventListener("click", function () {
-            voiceEnabled = !voiceEnabled;
-            this.textContent = voiceEnabled ? "Turn Off Voice Command" : "Turn On Voice Command";
-            if (voiceEnabled) {
-                startVoiceCommand();
-            } else {
-                stopVoiceCommand();
-            }
-        });
-
-        // Event listeners for dropdown menu
-        document.getElementById('contact-us').addEventListener('click', () => {
-            alert('Contact Us:\nAkasia: 012 701 1216\nMain: 082 645 6133');
-        });
-
-        document.getElementById('about-owners').addEventListener('click', () => {
-            alert('About the Owners:\nThe funeral parlour was founded by Mr. Ponkana.');
-        });
-    </script>
-
+    <!-- Open in New Tab -->
+    <br><br>
+    <a href="sample.pdf" target="_blank">
+        <button>Open in New Tab</button>
+    </a>
 </body>
 </html>
