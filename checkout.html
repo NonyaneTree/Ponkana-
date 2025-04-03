@@ -15,6 +15,14 @@
       font-size: 16px;
       cursor: pointer;
     }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .loading {
+      display: none;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -22,42 +30,77 @@
   <h1>Central SMS - Checkout</h1>
   <p>Amount to Pay: R<span id="amountDisplay">0.00</span></p>
   <button class="btn" id="payBtn">Pay Now</button>
+  <div id="loading" class="loading">Processing payment...</div>
 
   <script>
+    // Check for selected package
     const smsAmount = localStorage.getItem("selectedSMSValue");
-    if (!smsAmount) {
-      alert("No SMS package selected.");
+    if (!smsAmount || isNaN(parseFloat(smsAmount))) {
+      alert("No valid SMS package selected.");
       window.location.href = "index.html";
-    } else {
-      document.getElementById("amountDisplay").innerText = parseFloat(smsAmount).toFixed(2);
+      throw new Error("Invalid SMS amount");
     }
+    
+    // Display amount
+    const amount = parseFloat(smsAmount);
+    if (amount <= 0) {
+      alert("Invalid payment amount.");
+      window.location.href = "index.html";
+      throw new Error("Amount must be positive");
+    }
+    
+    document.getElementById("amountDisplay").textContent = amount.toFixed(2);
 
+    // Initialize Yoco
     const yoco = new YocoSDK({
       publicKey: "pk_live_88415492P4RYmO49b224"
     });
 
+    // Payment handler
     document.getElementById("payBtn").addEventListener("click", () => {
-      const checkout = yoco.checkout({
-        amountInCents: Math.round(parseFloat(smsAmount) * 100),
-        currency: "ZAR",
-        name: "Central SMS",
-        description: "Buy SMS credits",
-        callback: result => {
-          if (result.error) {
-            alert("Payment failed: " + result.error.message);
-          } else {
+      const payBtn = document.getElementById("payBtn");
+      const loading = document.getElementById("loading");
+      
+      payBtn.disabled = true;
+      loading.style.display = "block";
+      
+      try {
+        const amountInCents = Math.round(amount * 100);
+        if (amountInCents <= 0) {
+          throw new Error("Invalid amount");
+        }
+
+        const checkout = yoco.checkout({
+          amountInCents: amountInCents,
+          currency: "ZAR",
+          name: "Central SMS",
+          description: "Buy SMS credits",
+          callback: result => {
+            payBtn.disabled = false;
+            loading.style.display = "none";
+            
+            if (result.error) {
+              alert("Payment failed: " + result.error.message);
+              return;
+            }
+            
+            // In a real app, you should verify the payment with your server first
             let currentBalance = parseFloat(localStorage.getItem("balance")) || 0;
-            currentBalance += parseFloat(smsAmount);
+            currentBalance += amount;
             localStorage.setItem("balance", currentBalance);
+            
             alert("Payment successful. Returning to main screen.");
             window.location.href = "index.html";
           }
-        }
-      });
+        });
 
-      checkout.open();
+        checkout.open();
+      } catch (error) {
+        payBtn.disabled = false;
+        loading.style.display = "none";
+        alert("An error occurred: " + error.message);
+      }
     });
   </script>
-
 </body>
 </html>
