@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - Central SMS</title>
+  <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Central SMS - Checkout</h1>
+  <p>Amount to Pay: R<span id="amountDisplay">0.00</span></p>
+  <button class="btn" id="payBtn">Pay Now</button>
+
+  <script>
+    const smsAmount = localStorage.getItem("selectedSMSValue");
+    if (!smsAmount) {
+      alert("No SMS package selected.");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("amountDisplay").innerText = parseFloat(smsAmount).toFixed(2);
+    }
+
+    const yoco = new YocoSDK({
+      publicKey: "pk_live_88415492P4RYmO49b224"
+    });
+
+    document.getElementById("payBtn").addEventListener("click", () => {
+      const checkout = yoco.checkout({
+        amountInCents: Math.round(parseFloat(smsAmount) * 100),
+        currency: "ZAR",
+        name: "Central SMS",
+        description: "Buy SMS credits",
+        callback: result => {
+          if (result.error) {
+            alert("Payment failed: " + result.error.message);
+          } else {
+            let currentBalance = parseFloat(localStorage.getItem("balance")) || 0;
+            currentBalance += parseFloat(smsAmount);
+            localStorage.setItem("balance", currentBalance);
+            alert("Payment successful. Returning to main screen.");
+            window.location.href = "index.html";
+          }
+        }
+      });
+
+      checkout.open();
+    });
+  </script>
+
+</body>
+</html>
