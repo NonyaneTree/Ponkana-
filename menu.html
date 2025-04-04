@@ -14,8 +14,11 @@
         .container {
             margin-top: 50px;
         }
-        .hidden {
-            display: none;
+        input, textarea, select, button {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+            max-width: 400px;
         }
     </style>
 </head>
@@ -26,85 +29,109 @@
         <h2>Products</h2>
         <ul>
             <li>4 SMS for R2.00</li>
-            <li>5 SMS for R2.20</li>
+            <li>8 SMS for R2.20</li>
         </ul>
+
         <select id="smsOptions">
             <option value="">Select SMS Package</option>
-            <option value="2.00">One SMS for R2.00</option>
-            <option value="2.20">Two SMS for R2.20</option>
+            <option value="2.00|4">4 SMS for R2.00</option>
+            <option value="2.20|8">8 SMS for R2.20</option>
         </select>
-        <button id="selectBtn">Select</button>
+
+        <button id="selectBtn">Buy Package</button>
         <br><br>
+
+        <input type="text" id="phoneNumber" placeholder="Enter phone number to send to">
+        <textarea id="message" placeholder="Type your message here..."></textarea>
+        <button id="sendBtn">Send SMS</button>
+
+        <p>SMS Remaining: <span id="smsRemaining">0</span></p>
+
         <select onchange="navigatePage(this.value)">
             <option value="">More Options</option>
             <option value="sms.html">Write SMS</option>
             <option value="freesms.html">Free SMS</option>
         </select>
-        <br><br>
-        <textarea id="message" placeholder="Type your message here..."></textarea>
-        <br>
-        <button id="sendBtn">Send SMS</button>
     </div>
 
     <script>
-        // Function to get query parameters
         function getQueryParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
 
-        // Get the total balance from the URL
-        const totalBalance = getQueryParameter('totalBalance');
         let balance = parseFloat(localStorage.getItem('balance')) || 0;
+        let smsRemaining = parseInt(localStorage.getItem('smsRemaining')) || 0;
 
-        // Update balance based on the total balance from the URL
+        const totalBalance = getQueryParameter('totalBalance');
         if (totalBalance) {
             balance = parseFloat(totalBalance);
-            localStorage.setItem('balance', balance); // Update local storage
+            localStorage.setItem('balance', balance);
         }
 
         document.getElementById("balance").innerText = balance.toFixed(2);
+        document.getElementById("smsRemaining").innerText = smsRemaining;
 
-        document.getElementById("selectBtn").addEventListener("click", function() {
-            const smsValue = document.getElementById("smsOptions").value;
-            if (!smsValue) {
+        document.getElementById("selectBtn").addEventListener("click", function () {
+            const selected = document.getElementById("smsOptions").value;
+            if (!selected) {
                 alert("Please select an SMS package.");
                 return;
             }
 
-            localStorage.setItem("selectedSMSValue", smsValue);
-            window.location.href = "checkout.html";
+            const [price, quantity] = selected.split("|");
+            const priceValue = parseFloat(price);
+            const quantityValue = parseInt(quantity);
+
+            if (balance < priceValue) {
+                alert("Insufficient balance to purchase this package.");
+                return;
+            }
+
+            balance -= priceValue;
+            smsRemaining += quantityValue;
+            localStorage.setItem("balance", balance);
+            localStorage.setItem("smsRemaining", smsRemaining);
+
+            document.getElementById("balance").innerText = balance.toFixed(2);
+            document.getElementById("smsRemaining").innerText = smsRemaining;
+            alert(`You purchased ${quantityValue} SMS for R${priceValue.toFixed(2)}.`);
         });
 
-        document.getElementById("sendBtn").addEventListener("click", function() {
-            if (balance < 0.60) {
-                alert("Insufficient balance. Please buy more SMS.");
+        document.getElementById("sendBtn").addEventListener("click", function () {
+            const message = document.getElementById("message").value.trim();
+            const phoneNumber = document.getElementById("phoneNumber").value.trim();
+
+            if (!phoneNumber || !message) {
+                alert("Please enter both phone number and message.");
                 return;
             }
 
-            let message = document.getElementById("message").value.trim();
-            if (!message) {
-                alert("Please enter a message before sending.");
+            if (smsRemaining < 1) {
+                alert("No SMS left. Please buy a package.");
                 return;
             }
 
-            fetch("https://api.smsprovider.com/send", {
+            fetch("https://api.bulksms.com/v1/messages", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic " + btoa("DC2F3E7522074B1F924BBF954093265C:x")
+                },
                 body: JSON.stringify({
-                    apiKey: "DC2F3E7522074B1F924BBF954093265C",
-                    message: message
+                    to: phoneNumber,
+                    body: message
                 })
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    balance -= 0.60;
-                    localStorage.setItem("balance", balance);
-                    document.getElementById("balance").innerText = balance.toFixed(2);
+                if (data && data.status && data.status === '0') {
+                    smsRemaining -= 1;
+                    localStorage.setItem("smsRemaining", smsRemaining);
+                    document.getElementById("smsRemaining").innerText = smsRemaining;
                     alert("SMS sent successfully!");
                 } else {
-                    alert("Failed to send SMS: " + data.error);
+                    alert("Failed to send SMS: " + (data.error || JSON.stringify(data)));
                 }
             })
             .catch(error => {
