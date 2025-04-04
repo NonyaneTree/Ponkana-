@@ -85,13 +85,14 @@
               return;
             }
             
-            // In a real app, you should verify the payment with your server first
+            // Update balance in local storage
             let currentBalance = parseFloat(localStorage.getItem("balance")) || 0;
             currentBalance += amount;
             localStorage.setItem("balance", currentBalance);
             
-            alert("Payment successful. Returning to main screen.");
-            window.location.href = "index.html";
+            // Redirect to manu.html with the total balance as a query parameter
+            alert("Payment successful. Redirecting to the main screen.");
+            window.location.href = "manu.html?totalBalance=" + encodeURIComponent(currentBalance.toFixed(2));
           }
         });
       } catch (error) {
