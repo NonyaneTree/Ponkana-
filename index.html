@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,13 +25,13 @@
         <p>Available Balance: R<span id="balance">0.00</span></p>
         <h2>Products</h2>
         <ul>
-            <li>One SMS for R0.60</li>
-            <li>Two SMS for R1.20</li>
+            <li>4 SMS for R2.00</li>
+            <li>5 SMS for R2.20</li>
         </ul>
         <select id="smsOptions">
             <option value="">Select SMS Package</option>
-            <option value="0.60">One SMS for R0.60</option>
-            <option value="1.20">Two SMS for R1.20</option>
+            <option value="2.00">One SMS for R2.00</option>
+            <option value="2.20">Two SMS for R2.20</option>
         </select>
         <button id="selectBtn">Select</button>
         <br><br>
@@ -43,63 +44,79 @@
         <textarea id="message" placeholder="Type your message here..."></textarea>
         <br>
         <button id="sendBtn">Send SMS</button>
-    </div><script>
-    let balance = parseFloat(localStorage.getItem('balance')) || 0;
-    document.getElementById("balance").innerText = balance.toFixed(2);
+    </div>
 
-    document.getElementById("selectBtn").addEventListener("click", function() {
-        const smsValue = document.getElementById("smsOptions").value;
-        if (!smsValue) {
-            alert("Please select an SMS package.");
-            return;
+    <script>
+        // Function to get query parameters
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
 
-        localStorage.setItem("selectedSMSValue", smsValue);
-        window.location.href = "checkout.html";
-    });
+        // Get the total balance from the URL
+        const totalBalance = getQueryParameter('totalBalance');
+        let balance = parseFloat(localStorage.getItem('balance')) || 0;
 
-    document.getElementById("sendBtn").addEventListener("click", function() {
-        if (balance < 0.60) {
-            alert("Insufficient balance. Please buy more SMS.");
-            return;
+        // Update balance based on the total balance from the URL
+        if (totalBalance) {
+            balance = parseFloat(totalBalance);
+            localStorage.setItem('balance', balance); // Update local storage
         }
 
-        let message = document.getElementById("message").value.trim();
-        if (!message) {
-            alert("Please enter a message before sending.");
-            return;
-        }
+        document.getElementById("balance").innerText = balance.toFixed(2);
 
-        fetch("https://api.smsprovider.com/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                apiKey: "DC2F3E7522074B1F924BBF954093265C",
-                message: message
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                balance -= 0.60;
-                localStorage.setItem("balance", balance);
-                document.getElementById("balance").innerText = balance.toFixed(2);
-                alert("SMS sent successfully!");
-            } else {
-                alert("Failed to send SMS: " + data.error);
+        document.getElementById("selectBtn").addEventListener("click", function() {
+            const smsValue = document.getElementById("smsOptions").value;
+            if (!smsValue) {
+                alert("Please select an SMS package.");
+                return;
             }
-        })
-        .catch(error => {
-            alert("Error sending SMS: " + error.message);
+
+            localStorage.setItem("selectedSMSValue", smsValue);
+            window.location.href = "checkout.html";
         });
-    });
 
-    function navigatePage(page) {
-        if (page) {
-            window.location.href = page;
+        document.getElementById("sendBtn").addEventListener("click", function() {
+            if (balance < 0.60) {
+                alert("Insufficient balance. Please buy more SMS.");
+                return;
+            }
+
+            let message = document.getElementById("message").value.trim();
+            if (!message) {
+                alert("Please enter a message before sending.");
+                return;
+            }
+
+            fetch("https://api.smsprovider.com/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    apiKey: "DC2F3E7522074B1F924BBF954093265C",
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    balance -= 0.60;
+                    localStorage.setItem("balance", balance);
+                    document.getElementById("balance").innerText = balance.toFixed(2);
+                    alert("SMS sent successfully!");
+                } else {
+                    alert("Failed to send SMS: " + data.error);
+                }
+            })
+            .catch(error => {
+                alert("Error sending SMS: " + error.message);
+            });
+        });
+
+        function navigatePage(page) {
+            if (page) {
+                window.location.href = page;
+            }
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
