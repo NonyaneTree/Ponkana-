@@ -70,7 +70,8 @@
           throw new Error("Invalid amount");
         }
 
-        const checkout = yoco.checkout({
+        // Use showPopup instead of checkout
+        yoco.showPopup({
           amountInCents: amountInCents,
           currency: "ZAR",
           name: "Central SMS",
@@ -93,8 +94,6 @@
             window.location.href = "index.html";
           }
         });
-
-        checkout.open();
       } catch (error) {
         payBtn.disabled = false;
         loading.style.display = "none";
