@@ -1,0 +1,133 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SMS</title>
+
+    <!-- AdMob SDK -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        var adUnitId = "ca-app-pub-7221396727211259/1932545680";  
+        var appId = "ca-app-pub-7221396727211259~4886012083";  
+        var adWatchedCount = parseInt(localStorage.getItem("adWatchedCount")) || 0;
+        var sentMessages = parseInt(localStorage.getItem("sentMessages")) || 0;
+        var userId = localStorage.getItem("userId") || "";  // Store user ID (phone number)
+        var interstitialAd = null;
+
+        function loadAd() {
+            if (typeof google !== "undefined" && google.ads) {
+                interstitialAd = new google.ads.InterstitialAd(adUnitId);
+                interstitialAd.load();
+            }
+        }
+
+        function showAd() {
+            if (interstitialAd && interstitialAd.isLoaded()) {
+                interstitialAd.show();
+                interstitialAd.addEventListener("onAdClosed", function () {
+                    adWatchedCount++;
+                    localStorage.setItem("adWatchedCount", adWatchedCount);
+                    updateAdCountDisplay();
+                    loadAd();
+                });
+            } else {
+                alert("Ad is not ready yet. Please try again.");
+                loadAd();
+            }
+        }
+
+        function updateAdCountDisplay() {
+            document.getElementById("adCount").innerText = adWatchedCount;
+        }
+
+        function saveUserId() {
+            var inputUserId = document.getElementById("userId").value;
+            if (inputUserId === "") {
+                alert("Please enter your phone number as User ID.");
+                return;
+            }
+            userId = inputUserId;
+            localStorage.setItem("userId", userId);
+            alert("User ID saved successfully!");
+        }
+
+        function sendSMS() {
+            var phoneNumber = document.getElementById("phone").value;
+            var message = document.getElementById("message").value;
+
+            if (userId === "") {
+                alert("Please enter your phone number as User ID first.");
+                return;
+            }
+
+            if (phoneNumber === "" || message === "") {
+                alert("Please enter both phone number and message.");
+                return;
+            }
+
+            if (adWatchedCount < 4) {
+                alert("You must watch 4 ads before sending a message. Watched: " + adWatchedCount);
+                return;
+            }
+
+            var apiKey = "DC2F3E7522074B1F924BBF954093265C-01-D";
+            var url = "https://api.bulksms.com/v1/messages";
+            var smsData = { 
+                to: phoneNumber, 
+                body: message, 
+                user_id: userId  // This is just for tracking, not as a sender ID
+            };
+
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                body: JSON.stringify(smsData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("SMS sent successfully!");
+                    sentMessages++;
+                    localStorage.setItem("sentMessages", sentMessages);
+                    adWatchedCount -= 4;
+                    localStorage.setItem("adWatchedCount", adWatchedCount);
+                    updateAdCountDisplay();
+                } else {
+                    alert("Failed to send SMS: " + data.error);
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+            });
+        }
+
+        window.onload = function () {
+            updateAdCountDisplay();
+            loadAd();
+            document.getElementById("userId").value = userId;
+        };
+    </script>
+</head>
+<body>
+    <h2>Send SMS</h2>
+
+    <label for="userId">Enter Your Phone Number (User ID):</label>
+    <input type="text" id="userId" placeholder="Enter your number">
+    <button onclick="saveUserId()">Save User ID</button>
+    <br><br>
+
+    <label for="phone">Recipient's Phone Number:</label>
+    <input type="text" id="phone" placeholder="Enter phone number">
+    <br><br>
+
+    <label for="message">Message:</label>
+    <textarea id="message" placeholder="Type your message"></textarea>
+    <br><br>
+
+    <button onclick="showAd()">Watch Ad (Required: 4)</button>
+    <p>Ads Watched: <span id="adCount">0</span></p>
+
+    <button onclick="sendSMS()">Send SMS</button>
+</body>
+</html>
