@@ -1,158 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central SMS Store</title>
-    <style>
-        body {
-            background-color: white;
-            color: black;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        input, textarea, select, button {
-            padding: 10px;
-            margin: 10px;
-            width: 80%;
-            max-width: 400px;
-        }
-    </style>
-    <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
-</head>
-<body>
-    <h1>Central SMS</h1>
-    <div class="container">
-        <p>Available Balance: R<span id="balance">0.00</span></p>
-        <h2>Products</h2>
-        <ul>
-            <li>4 SMS for R2.00</li>
-            <li>8 SMS for R4.20</li>
-        </ul>
-        <select id="smsOptions">
-            <option value="">Select SMS Package</option>
-            <option value="2.00|4">4 SMS for R2.00</option>
-            <option value="2.20|8">8 SMS for R2.20</option>
-        </select>
-        <button id="payBtn">Buy Package (Pay with Yoco)</button>
-        <br><br>
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Central SMS Store</title>  
+    <style>  
+        body {  
+            background-color: white;  
+            color: black;  
+            font-family: Arial, sans-serif;  
+            text-align: center;  
+        }  
+        .container {  
+            margin-top: 50px;  
+        }  
+        .hidden {  
+            display: none;  
+        }  
+    </style>  
+</head>  
+<body>  
+    <h1>Central SMS</h1>  
+    <div class="container">  
+        <p>Available Balance: R<span id="balance">0.00</span></p>  
+        <h2>Products</h2>  
+        <ul>  
+            <li>4 SMS for R2.00</li>  
+            <li>5 SMS for R2.20</li>  
+        </ul>  
+        <select id="smsOptions">  
+            <option value="">Select SMS Package</option>  
+            <option value="2.00">One SMS for R2.00</option>  
+            <option value="2.20">Two SMS for R2.20</option>  
+        </select>  
+        <button id="selectBtn">Select</button>  
+        <br><br>  
+        <select onchange="navigatePage(this.value)">  
+            <option value="">More Options</option>  
+            <option value="sms.html">Write SMS</option>  
+            <option value="freesms.html">Free SMS</option>  
+        </select>  
+        <br><br>  
+        <textarea id="message" placeholder="Type your message here..."></textarea>  
+        <br>  
+        <button id="sendBtn">Send SMS</button>  
+    </div>  <script>  
+    // Function to get query parameters  
+    function getQueryParameter(name) {  
+        const urlParams = new URLSearchParams(window.location.search);  
+        return urlParams.get(name);  
+    }  
 
-        <input type="text" id="phoneNumber" placeholder="Enter phone number to send to">
-        <textarea id="message" placeholder="Type your message here..."></textarea>
-        <button id="sendBtn">Send SMS</button>
+    // Get the total balance from the URL  
+    const totalBalance = getQueryParameter('totalBalance');  
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;  
 
-        <p>SMS Remaining: <span id="smsRemaining">0</span></p>
+    // Update balance based on the total balance from the URL  
+    if (totalBalance) {  
+        balance = parseFloat(totalBalance);  
+        localStorage.setItem('balance', balance); // Update local storage  
+    }  
 
-        <select onchange="navigatePage(this.value)">
-            <option value="">More Options</option>
-            <option value="sms.html">Write SMS</option>
-            <option value="central.html">Free SMS</option>
-        </select>
-    </div>
+    document.getElementById("balance").innerText = balance.toFixed(2);  
 
-    <script>
-        // Initialize Yoco SDK
-        const yoco = new window.YocoSDK({
-            publicKey: "pk_live_88415492P4RYmO49b224" // Replace with your actual public key
-        });
+    document.getElementById("selectBtn").addEventListener("click", function() {  
+        const smsValue = document.getElementById("smsOptions").value;  
+        if (!smsValue) {  
+            alert("Please select an SMS package.");  
+            return;  
+        }  
 
-        // Initialize balance and SMS remaining
-        let balance = parseFloat(localStorage.getItem('balance')) || 0;
-        let smsRemaining = parseInt(localStorage.getItem('smsRemaining')) || 0;
+        localStorage.setItem("selectedSMSValue", smsValue);  
+        window.location.href = "checkout.html";  
+    });  
 
-        document.getElementById("balance").innerText = balance.toFixed(2);
-        document.getElementById("smsRemaining").innerText = smsRemaining;
+    document.getElementById("sendBtn").addEventListener("click", function() {  
+        if (balance < 0.60) {  
+            alert("Insufficient balance. Please buy more SMS.");  
+            return;  
+        }  
 
-        let currentPrice = 0;
-        let currentQty = 0;
+        let message = document.getElementById("message").value.trim();  
+        if (!message) {  
+            alert("Please enter a message before sending.");  
+            return;  
+        }  
 
-        // Checkout configuration
-        const checkout = yoco.inlineCheckout({
-            currency: "ZAR",
-            name: "Central SMS",
-            description: "SMS Package",
-            callback: function(result) {
-                if (result.error) {
-                    alert("Payment failed: " + result.error.message);
-                } else {
-                    // On successful payment
-                    balance -= parseFloat(currentPrice);
-                    smsRemaining += parseInt(currentQty);
+        fetch("https://api.smsprovider.com/send", {  
+            method: "POST",  
+            headers: { "Content-Type": "application/json" },  
+            body: JSON.stringify({  
+                apiKey: "DC2F3E7522074B1F924BBF954093265C",  
+                message: message  
+            })  
+        })  
+        .then(response => response.json())  
+        .then(data => {  
+            if (data.success) {  
+                balance -= 0.60;  
+                localStorage.setItem("balance", balance);  
+                document.getElementById("balance").innerText = balance.toFixed(2);  
+                alert("SMS sent successfully!");  
+            } else {  
+                alert("Failed to send SMS: " + data.error);  
+            }  
+        })  
+        .catch(error => {  
+            alert("Error sending SMS: " + error.message);  
+        });  
+    });  
 
-                    localStorage.setItem("balance", balance);
-                    localStorage.setItem("smsRemaining", smsRemaining);
+    function navigatePage(page) {  
+        if (page) {  
+            window.location.href = page;  
+        }  
+    }  
+</script>
 
-                    document.getElementById("balance").innerText = balance.toFixed(2);
-                    document.getElementById("smsRemaining").innerText = smsRemaining;
-
-                    alert(`Payment successful! You purchased ${currentQty} SMS.`);
-                }
-            }
-        });
-
-        // Button to initiate payment
-        document.getElementById("payBtn").addEventListener("click", () => {
-            const selected = document.getElementById("smsOptions").value;
-            if (!selected) {
-                alert("Please select an SMS package.");
-                return;
-            }
-
-            const [price, quantity] = selected.split("|");
-            currentPrice = price;
-            currentQty = quantity;
-
-            const priceInCents = Math.round(parseFloat(price) * 100);
-            console.log(`Opening Yoco checkout for ${priceInCents} cents.`);
-            checkout.open({ amountInCents: priceInCents });
-        });
-
-        // SMS sending functionality
-        document.getElementById("sendBtn").addEventListener("click", function() {
-            if (smsRemaining <= 0) {
-                alert("You have no SMS remaining. Please buy more SMS.");
-                return;
-            }
-
-            let message = document.getElementById("message").value.trim();
-            if (!message) {
-                alert("Please enter a message before sending.");
-                return;
-            }
-
-            fetch("https://api.smsprovider.com/send", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    apiKey: "DC2F3E7522074B1F924BBF954093265C",
-                    phoneNumber: document.getElementById("phoneNumber").value,
-                    message: message
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    smsRemaining--;
-                    localStorage.setItem("smsRemaining", smsRemaining);
-                    document.getElementById("smsRemaining").innerText = smsRemaining;
-                    alert("SMS sent successfully!");
-                } else {
-                    alert("Failed to send SMS: " + data.error);
-                }
-            })
-            .catch(error => {
-                alert("Error sending SMS: " + error.message);
-            });
-        });
-
-        function navigatePage(page) {
-            if (page) {
-                window.location.href = page;
-            }
-        }
-    </script>
-</body>
+</body>  
 </html>
