@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Send SMS</title>
+</head>
+<body>
+  <h2>Send SMS</h2>
+  <p id="smsCount">Loading SMS balance...</p>
+
+  <form id="smsForm">
+    <label for="number">Your Number:</label><br>
+    <input type="text" id="number" name="number" required><br><br>
+
+    <label for="message">Your Message:</label><br>
+    <textarea id="message" name="message" required></textarea><br><br>
+
+    <button type="submit">Send SMS</button>
+  </form>
+
+  <p id="response"></p>
+
+  <script>
+    // Fetch SMS balance from manu.html
+    fetch('manu.html')
+      .then(response => response.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const smsElement = doc.querySelector('#sms-balance');
+        if (smsElement) {
+          document.getElementById('smsCount').textContent = "Available SMS: " + smsElement.textContent;
+        } else {
+          document.getElementById('smsCount').textContent = "SMS count not found.";
+        }
+      })
+      .catch(() => {
+        document.getElementById('smsCount').textContent = "Error loading SMS count.";
+      });
+
+    // Send SMS on form submit
+    document.getElementById('smsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const number = document.getElementById('number').value;
+      const message = document.getElementById('message').value;
+
+      // Replace this URL with the actual SMS API endpoint
+      fetch('https://bulk-sms-api.example.com/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer DC2F3E7522074B1F924BBF954093265C-01-D'
+        },
+        body: JSON.stringify({
+          to: number,
+          body: message
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('response').textContent = "SMS sent: " + JSON.stringify(data);
+      })
+      .catch(err => {
+        document.getElementById('response').textContent = "Failed to send SMS.";
+      });
+    });
+  </script>
+</body>
+</html>
